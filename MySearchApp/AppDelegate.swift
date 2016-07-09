@@ -1,10 +1,3 @@
-//
-//  AppDelegate.swift
-//  MySearchApp
-//
-//  Created by Mao Nishi on 2015/10/12.
-//  Copyright © 2015年 Mao Nishi. All rights reserved.
-//
 
 import UIKit
 
