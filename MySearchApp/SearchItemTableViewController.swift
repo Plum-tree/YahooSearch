@@ -19,7 +19,6 @@ class SearchItemTableViewController: UITableViewController, UISearchBarDelegate 
     
     //APIを利用するためのアプリケーションID
     let appid: String = "dj0zaiZpPTJBRThHaDNoWk1wZCZzPWNvbnN1bWVyc2VjcmV0Jng9Zjg-"
-//    let appid: String = "発行したアプリケーションIDをここに設定してください"
     
     //APIのURL
     let entryUrl: String = "https://shopping.yahooapis.jp/ShoppingWebService/V1/json/itemSearch"
@@ -50,15 +49,19 @@ class SearchItemTableViewController: UITableViewController, UISearchBarDelegate 
             itemDataArray.removeAll()
             
             //パラメータを指定する
+            //　appid - アプリケーションID
+            // query - 検索するキーワード
             let parameter = ["appid":appid, "query":inputText]
             
             //パラメータをエンコードしたURLを作成する
-            let requestUrl = createRequestUrl(parameter)
+            // URLエンコード->Web APIのリクエストに使用できない文字の変換を行うこと
+            let requestUrl = self.createRequestUrl(parameter)
             
             //APIをリクエストする
             request(requestUrl)
         }
         //キーボードを閉じる
+        // resignFirstResponder - iPhoneのキーボードを閉じるため、resignFirstResponderでフォーカス1をsearchBarに変更している
         searchBar.resignFirstResponder()
     }
     
@@ -73,7 +76,11 @@ class SearchItemTableViewController: UITableViewController, UISearchBarDelegate 
                     parameterString += "&"
                 }
                 
+                
                 //値をエンコードする
+                //stringByAddingPercentEncodingWithAllowedCharacters
+//                    Returns a new string made from the String by replacing all characters
+//                    not in the specified set with percent encoded characters.
                 if let escapedValue =
                     value!.stringByAddingPercentEncodingWithAllowedCharacters(
                         NSCharacterSet.URLQueryAllowedCharacterSet()) {
@@ -81,11 +88,14 @@ class SearchItemTableViewController: UITableViewController, UISearchBarDelegate 
                 }
             }
         }
+        
+        // WebAPIはリクエスト先にであるURLの末尾に「？」をつけるため
         let requestUrl = entryUrl + "?" + parameterString
         return requestUrl
     }
     
     //リクエストを行なう
+    // createRequestURLで作成されたURLを引数に使う
     func request(requestUrl: String) {
         //商品検索APIをコールして商品検索を行なう
         let session = NSURLSession.sharedSession()
@@ -108,6 +118,7 @@ class SearchItemTableViewController: UITableViewController, UISearchBarDelegate 
                     return
                 }
                 
+                // 商品検索APIのレスポンスデータはJSON形式で返却される
                 //Jsonで返却されたデータをパースして格納する
                 if let data = data {
                     let jsonData = try! NSJSONSerialization.JSONObjectWithData(
@@ -228,8 +239,6 @@ class SearchItemTableViewController: UITableViewController, UISearchBarDelegate 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return itemDataArray.count
     }
-    
-
     
     //商品をタップして次の画面に遷移する前の処理
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
